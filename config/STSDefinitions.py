@@ -2,7 +2,7 @@
 #coding=utf-8
 '''/
 author :SongYang
-'''
+''' 
 import xlrd
 from config.settings import D_STSBSC_DICTIONARY , D_STSTRA_DICTIONARY , D_STSCELL_DICTIONARY , D_STSLAPD_DICTIONARY , D_STSMOTS_DICTIONARY , D_STSHOINT_DICTIONARY , D_STSHOEXT_DICTIONARY
 from config.settings import D_OBJ_LEVEL_DICTIONARY
@@ -28,8 +28,8 @@ class DefinitionsToDictionary(object):
             row_data = s_sh.row_values(i)
             self.__row_list.append(row_data)
                     
-    def f_level_classify(self):
-        '''/
+    def levelclassify(self): 
+        '''/ 
         '''        
         for i in range(0 , self.__nrows):
             if (self.__row_list[i][0] == "STSBSC"):
