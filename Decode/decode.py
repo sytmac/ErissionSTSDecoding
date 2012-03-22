@@ -5,14 +5,15 @@ author:SongYang
 '''
 import os
 import binascii
-from config.settings import D_OBJ_LEVEL_DICTIONARY
-from config.settings import D_DICTIONARY_OT
-from config.settings import D_COUNTER_OT_DICTIONARY
-from config.settings import D_DICTIONARY_OT_COLUMNNAME
-from config.settings import D_DICTIONARY_LEVEL_TO_OTLIST
-from config.settings import D_DICTIONARY_LIST_OT_NAME
-from config.settings import L_LEVELTYPE_LIST
-from config.settings import D_DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL
+from config.settings import RECORD_COUNTER
+from config.settings import OBJ_LEVEL_DICTIONARY
+from config.settings import DICTIONARY_OT
+from config.settings import COUNTER_OT_DICTIONARY
+from config.settings import DICTIONARY_OT_COLUMNNAME
+from config.settings import DICTIONARY_LEVEL_TO_OTLIST
+from config.settings import DICTIONARY_LIST_OT_NAME
+from config.settings import LEVELTYPE_LIST
+from config.settings import DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL
 class STSdecode():
     '''/
     解析类
@@ -114,12 +115,12 @@ class STSdecode():
                                 s_objtypename = s_otmo.split('.')[0]
                                 s_mo = s_otmo.split('.')[1]
                                 #如果 ObjType Excel中定义了该 ObjType，那么进行处理
-                                if(D_OBJ_LEVEL_DICTIONARY.has_key(s_objtypename)):
-                                    s_objlev = D_OBJ_LEVEL_DICTIONARY[s_objtypename]
+                                if(OBJ_LEVEL_DICTIONARY.has_key(s_objtypename)):
+                                    s_objlev = OBJ_LEVEL_DICTIONARY[s_objtypename]
                                     d_dictionary["TableName"] = s_objtypename
                                     d_dictionary["NameSpace"] = s_objlev    
                                     if(s_flag_ot == False):
-                                        D_DICTIONARY_OT[d_dictionary["TableName"]] = []
+                                        DICTIONARY_OT[d_dictionary["TableName"]] = []
                                         s_flag_ot = True
                                     else:
                                         pass                                 
@@ -169,7 +170,7 @@ class STSdecode():
                                         and binascii.hexlify(filestring[i_pos+5])== "00"
                                         and binascii.hexlify(filestring[i_pos+6]) == "00"):
                                         i_pos = i_pos+7#走到下一行数据
-                                        #将数据加入到D_DICTIONARY_OT
+                                        #将数据加入到DICTIONARY_OT
                                         length = len(l_ot_columnname)
                                         l_templist = []
                                         removed_list = []
@@ -180,7 +181,7 @@ class STSdecode():
                                             if(i < 6):
                                                 l_templist.append(d_dictionary[l_ot_columnname[i]])
                                             elif(i >= 6):
-                                                if(D_COUNTER_OT_DICTIONARY[D_OBJ_LEVEL_DICTIONARY[s_objtypename]].has_key(l_ot_columnname[i]) == True):
+                                                if(COUNTER_OT_DICTIONARY[OBJ_LEVEL_DICTIONARY[s_objtypename]].has_key(l_ot_columnname[i]) == True):
                                                     l_templist.append(d_dictionary[l_ot_columnname[i]])
                                                 else:
                                                     removed_list.append(l_ot_columnname[i])
@@ -188,11 +189,11 @@ class STSdecode():
                                         for i in range(0 , len(removed_list)):
                                             l_l_ot_columnname_cp.remove(removed_list[i])
                                         #将不同的OT的 属性保存 
-                                        s_index = D_OBJ_LEVEL_DICTIONARY[s_objtypename]
-                                        if(D_DICTIONARY_OT_COLUMNNAME[s_index].has_key(s_objtypename) == False):
-                                            D_DICTIONARY_OT_COLUMNNAME[s_index][s_objtypename] = l_l_ot_columnname_cp                                         
-                                        #D_DICTIONARY_OT里面包含的是所有的OT类型下面所对应的链表 每一个链表都是这个OT字典所对应的数据                            
-                                        D_DICTIONARY_OT[d_dictionary["TableName"]].append(l_templist)
+                                        s_index = OBJ_LEVEL_DICTIONARY[s_objtypename]
+                                        if(DICTIONARY_OT_COLUMNNAME[s_index].has_key(s_objtypename) == False):
+                                            DICTIONARY_OT_COLUMNNAME[s_index][s_objtypename] = l_l_ot_columnname_cp                                         
+                                        #DICTIONARY_OT里面包含的是所有的OT类型下面所对应的链表 每一个链表都是这个OT字典所对应的数据                            
+                                        DICTIONARY_OT[d_dictionary["TableName"]].append(l_templist)
                                                                                  
                                 else:
                                     s_objlev = "NODEF"
@@ -202,16 +203,16 @@ class STSdecode():
         首先需要调用 self.decode() 进行解析
         之后调用 此函数 进行OT汇总
         '''
-        l_ot = D_DICTIONARY_OT.keys()#文件里面所有OT的值,这是一个list
+        l_ot = DICTIONARY_OT.keys()#文件里面所有OT的值,这是一个list
         #每次添加数据的时候让上一次的数据清0
         for i in range(0 , len(l_ot)):
-            D_DICTIONARY_LEVEL_TO_OTLIST[D_OBJ_LEVEL_DICTIONARY[l_ot[i]]] = []
-            D_DICTIONARY_LIST_OT_NAME[D_OBJ_LEVEL_DICTIONARY[l_ot[i]]] = []
+            DICTIONARY_LEVEL_TO_OTLIST[OBJ_LEVEL_DICTIONARY[l_ot[i]]] = []
+            DICTIONARY_LIST_OT_NAME[OBJ_LEVEL_DICTIONARY[l_ot[i]]] = []
         for i in range(0 , len(l_ot)):
-            #D_DICTIONARY_LEVEL_TO_OTLIST 是保存同一类LEVEL的 不同的OT list 的list
+            #DICTIONARY_LEVEL_TO_OTLIST 是保存同一类LEVEL的 不同的OT list 的list
             #它里面的每一个列表属于一个OT
-            D_DICTIONARY_LEVEL_TO_OTLIST[D_OBJ_LEVEL_DICTIONARY[l_ot[i]]].append(D_DICTIONARY_OT[l_ot[i]])
-            D_DICTIONARY_LIST_OT_NAME[D_OBJ_LEVEL_DICTIONARY[l_ot[i]]].append(l_ot[i])
+            DICTIONARY_LEVEL_TO_OTLIST[OBJ_LEVEL_DICTIONARY[l_ot[i]]].append(DICTIONARY_OT[l_ot[i]])
+            DICTIONARY_LIST_OT_NAME[OBJ_LEVEL_DICTIONARY[l_ot[i]]].append(l_ot[i])
     #将不同OT表进行合并        
     def sameleveltableintoonetable(self):
         '''
@@ -220,7 +221,7 @@ class STSdecode():
     之后调用此函数进行写不同level文件
         '''
         #同一种的OT属性进行输出 ， 为了入数据库
-        s_leveltype_len = len(L_LEVELTYPE_LIST)
+        s_leveltype_len = len(LEVELTYPE_LIST)
         for i in range (0 , s_leveltype_len):
             l_countercolumnname_for_level = []
             l_countercolumnname_for_level.append("ID")
@@ -229,28 +230,28 @@ class STSdecode():
             l_countercolumnname_for_level.append("DATE")
             l_countercolumnname_for_level.append("PERIOD")
             l_countercolumnname_for_level.append("PERLEN")
-            D_DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL[L_LEVELTYPE_LIST[i]].extend(l_countercolumnname_for_level)
-            for j in range(0 , len(D_DICTIONARY_LIST_OT_NAME[L_LEVELTYPE_LIST[i]])):           
-                D_DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL[L_LEVELTYPE_LIST[i]].extend(D_DICTIONARY_OT_COLUMNNAME[L_LEVELTYPE_LIST[i]][D_DICTIONARY_LIST_OT_NAME[L_LEVELTYPE_LIST[i]][j]])
+            DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL[LEVELTYPE_LIST[i]].extend(l_countercolumnname_for_level)
+            for j in range(0 , len(DICTIONARY_LIST_OT_NAME[LEVELTYPE_LIST[i]])):           
+                DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL[LEVELTYPE_LIST[i]].extend(DICTIONARY_OT_COLUMNNAME[LEVELTYPE_LIST[i]][DICTIONARY_LIST_OT_NAME[LEVELTYPE_LIST[i]][j]])
         self.__openfile()
         for i in range(0 , s_leveltype_len):#遍历有几种LEVEL类型
-            if(len(D_DICTIONARY_LEVEL_TO_OTLIST[L_LEVELTYPE_LIST[i]])>0):
+            if(len(DICTIONARY_LEVEL_TO_OTLIST[LEVELTYPE_LIST[i]])>0):
                 #j表示OT里面每张表的长度，同一个OT里面的表的长度是相同的             
-                for j in range(0 , len(D_DICTIONARY_LEVEL_TO_OTLIST[L_LEVELTYPE_LIST[i]][0])):                       
+                for j in range(0 , len(DICTIONARY_LEVEL_TO_OTLIST[LEVELTYPE_LIST[i]][0])):                       
                     counter_data = []
-                    counter_data.append(D_DICTIONARY_LEVEL_TO_OTLIST[L_LEVELTYPE_LIST[i]][0][j][0])
-                    counter_data.append(D_DICTIONARY_LEVEL_TO_OTLIST[L_LEVELTYPE_LIST[i]][0][j][1])
-                    counter_data.append(D_DICTIONARY_LEVEL_TO_OTLIST[L_LEVELTYPE_LIST[i]][0][j][2])
-                    counter_data.append(D_DICTIONARY_LEVEL_TO_OTLIST[L_LEVELTYPE_LIST[i]][0][j][3])
-                    counter_data.append(D_DICTIONARY_LEVEL_TO_OTLIST[L_LEVELTYPE_LIST[i]][0][j][4])
-                    counter_data.append(D_DICTIONARY_LEVEL_TO_OTLIST[L_LEVELTYPE_LIST[i]][0][j][5])
-                    for k in range(0 , len(D_DICTIONARY_LEVEL_TO_OTLIST[L_LEVELTYPE_LIST[i]])):#k指同一个oT的表的个数                       
+                    counter_data.append(DICTIONARY_LEVEL_TO_OTLIST[LEVELTYPE_LIST[i]][0][j][0])
+                    counter_data.append(DICTIONARY_LEVEL_TO_OTLIST[LEVELTYPE_LIST[i]][0][j][1])
+                    counter_data.append(DICTIONARY_LEVEL_TO_OTLIST[LEVELTYPE_LIST[i]][0][j][2])
+                    counter_data.append(DICTIONARY_LEVEL_TO_OTLIST[LEVELTYPE_LIST[i]][0][j][3])
+                    counter_data.append(DICTIONARY_LEVEL_TO_OTLIST[LEVELTYPE_LIST[i]][0][j][4])
+                    counter_data.append(DICTIONARY_LEVEL_TO_OTLIST[LEVELTYPE_LIST[i]][0][j][5])
+                    for k in range(0 , len(DICTIONARY_LEVEL_TO_OTLIST[LEVELTYPE_LIST[i]])):#k指同一个oT的表的个数                       
                         try:
-                            counter_data.extend(D_DICTIONARY_LEVEL_TO_OTLIST[L_LEVELTYPE_LIST[i]][k][j][6:])
+                            counter_data.extend(DICTIONARY_LEVEL_TO_OTLIST[LEVELTYPE_LIST[i]][k][j][6:])
                         except IndexError:
                             print "index error"
                             pass
-                    self.__insertdataintofile(L_LEVELTYPE_LIST[i] , counter_data)                             
+                    self.__insertdataintofile(LEVELTYPE_LIST[i] , counter_data)                             
         
         self.__closefile()                
     def __openfile(self):
@@ -266,31 +267,31 @@ class STSdecode():
         #如果不存在就 将列名写进去
         if ((os.path.isfile(self.__result_path+'/result_table/STSBSC')) == False): 
             p_fp = open(self.__result_path+'/result_table/STSBSC','a')
-            p_fp.write(','.join(D_DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSBSC"])+'\n')
+            p_fp.write(','.join(DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSBSC"])+'\n')
             p_fp.close()
         if ((os.path.isfile(self.__result_path+'/result_table/STSTRA')) == False):
             p_fp = open(self.__result_path+'/result_table/STSTRA','a')
-            p_fp.write(','.join(D_DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSTRA"])+'\n')
+            p_fp.write(','.join(DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSTRA"])+'\n')
             p_fp.close()
         if ((os.path.isfile(self.__result_path+'/result_table/STSCELL')) == False):
             p_fp = open(self.__result_path+'/result_table/STSCELL','a')
-            p_fp.write(','.join(D_DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSCELL"])+'\n')
+            p_fp.write(','.join(DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSCELL"])+'\n')
             p_fp.close()
         if ((os.path.isfile(self.__result_path+'/result_table/STSLAPD')) == False):
             p_fp = open(self.__result_path+'/result_table/STSLAPD','a')
-            p_fp.write(','.join(D_DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSLAPD"])+'\n')
+            p_fp.write(','.join(DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSLAPD"])+'\n')
             p_fp.close()
         if ((os.path.isfile(self.__result_path+'/result_table/STSHOEXT')) == False):
             p_fp = open(self.__result_path+'/result_table/STSHOEXT','a')
-            p_fp.write(','.join(D_DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSHOEXT"])+'\n')
+            p_fp.write(','.join(DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSHOEXT"])+'\n')
             p_fp.close()
         if ((os.path.isfile(self.__result_path+'/result_table/STSMOTS')) == False):
             p_fp = open(self.__result_path+'/result_table/STSMOTS','a')
-            p_fp.write(','.join(D_DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSMOTS"])+'\n')
+            p_fp.write(','.join(DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSMOTS"])+'\n')
             p_fp.close()
         if ((os.path.isfile(self.__result_path+'/result_table/STSHOINT')) == False): 
             p_fp = open(self.__result_path+'/result_table/STSHOINT','a')
-            p_fp.write(','.join(D_DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSHOINT"])+'\n')
+            p_fp.write(','.join(DICTIONARY_COUNTERCOLUMNNAME_FOR_EACHLEVEL["STSHOINT"])+'\n')
             p_fp.close()
         self.__fp_sts_bsc = open(self.__result_path+"/result_table/STSBSC","a")
         self.__fp_sts_tra = open(self.__result_path+"/result_table/STSTRA","a")
@@ -328,6 +329,5 @@ class STSdecode():
             self.__fp_sts_hoint.writelines(','.join(s_counter_data)+'\n')
         if(s_level == "STSHOEXT"):           
             self.__fp_sts_hoext.writelines(','.join(s_counter_data)+'\n')
-
-
-
+        
+        RECORD_COUNTER[s_level]+=1

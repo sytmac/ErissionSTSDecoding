@@ -4,8 +4,8 @@
 author :SongYang
 ''' 
 import xlrd
-from config.settings import D_STSBSC_DICTIONARY , D_STSTRA_DICTIONARY , D_STSCELL_DICTIONARY , D_STSLAPD_DICTIONARY , D_STSMOTS_DICTIONARY , D_STSHOINT_DICTIONARY , D_STSHOEXT_DICTIONARY
-from config.settings import D_OBJ_LEVEL_DICTIONARY
+from config.settings import STSBSC_DICTIONARY , STSTRA_DICTIONARY , STSCELL_DICTIONARY , STSLAPD_DICTIONARY , STSMOTS_DICTIONARY , STSHOINT_DICTIONARY , STSHOEXT_DICTIONARY
+from config.settings import OBJ_LEVEL_DICTIONARY
 class DefinitionsToDictionary(object):
     '''/
     '''
@@ -34,25 +34,25 @@ class DefinitionsToDictionary(object):
         for i in range(0 , self.__nrows):
             if (self.__row_list[i][0] == "STSBSC"):
                 s_index = self.__row_list[i][2]
-                D_STSBSC_DICTIONARY[s_index] = self.__row_list[i][1]
+                STSBSC_DICTIONARY[s_index] = self.__row_list[i][1]
             elif (self.__row_list[i][0] == "STSTRA"):
                 s_index = self.__row_list[i][2]
-                D_STSTRA_DICTIONARY[s_index] = self.__row_list[i][1]
+                STSTRA_DICTIONARY[s_index] = self.__row_list[i][1]
             elif (self.__row_list[i][0] == "STSCELL"):
                 s_index = self.__row_list[i][2]
-                D_STSCELL_DICTIONARY[s_index] = self.__row_list[i][1]
+                STSCELL_DICTIONARY[s_index] = self.__row_list[i][1]
             elif (self.__row_list[i][0] == "STSLAPD"):
                 s_index = self.__row_list[i][2]
-                D_STSLAPD_DICTIONARY[s_index] = self.__row_list[i][1]
+                STSLAPD_DICTIONARY[s_index] = self.__row_list[i][1]
             elif (self.__row_list[i][0] == "STSMOTS"):
                 s_index = self.__row_list[i][2]
-                D_STSMOTS_DICTIONARY[s_index] = self.__row_list[i][1]
+                STSMOTS_DICTIONARY[s_index] = self.__row_list[i][1]
             elif (self.__row_list[i][0] == "STSHOINT"):
                 s_index = self.__row_list[i][2]
-                D_STSHOINT_DICTIONARY[s_index] = self.__row_list[i][1]
+                STSHOINT_DICTIONARY[s_index] = self.__row_list[i][1]
             elif (self.__row_list[i][0] == "STSHOEXT"):
                 s_index = self.__row_list[i][2]
-                D_STSHOEXT_DICTIONARY[s_index] = self.__row_list[i][1]              
+                STSHOEXT_DICTIONARY[s_index] = self.__row_list[i][1]              
         #根据OBJTYPE和Level生成对应的字典
         for i in range(1 , self.__nrows):
-            D_OBJ_LEVEL_DICTIONARY[self.__row_list[i][1]] = self.__row_list[i][0]
+            OBJ_LEVEL_DICTIONARY[self.__row_list[i][1]] = self.__row_list[i][0]

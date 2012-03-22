@@ -3,10 +3,10 @@
 '''/
 author :SongYang
 '''
+import json
 from  decode import STSdecode
 from config.STSDefinitions import DefinitionsToDictionary
-from config.settings import L_LEVELTYPE_LIST
-import os
+from config.settings import LEVELTYPE_LIST,RECORD_COUNTER
 import datetime
 import re
 def stsdef_operation(s_defpath):
@@ -63,9 +63,9 @@ def json_packaging(filepath,jsonfile_path,exception_message):
     封装json串返回给前台，输入参数为需要一次性解析的文件路径
     '''
     slevel_dictionary = {}
-    levlength = len(L_LEVELTYPE_LIST)
+    levlength = len(LEVELTYPE_LIST)
     for i in range(0 , levlength):
-        slevel_dictionary[L_LEVELTYPE_LIST[i]] = []
+        slevel_dictionary[LEVELTYPE_LIST[i]] = []
         json_dictionary = {}
         filename = filepath.split('\\')[-1]
         filedatetime = filename[1:9]
@@ -74,11 +74,12 @@ def json_packaging(filepath,jsonfile_path,exception_message):
         json_dictionary["DataStartTime"] = date+' 00:00:00'
         json_dictionary["Interval"] = str(3600*24*7)
         json_dictionary["SaveFileName"] = filepath
-        json_dictionary["FileName"] = L_LEVELTYPE_LIST[i]
-        slevel_dictionary[L_LEVELTYPE_LIST[i]].append(json_dictionary)
+        json_dictionary["FileName"] = LEVELTYPE_LIST[i]
+        json_dictionary["RecordNums"] = RECORD_COUNTER[LEVELTYPE_LIST[i]]
+        slevel_dictionary[LEVELTYPE_LIST[i]].append(json_dictionary)
         slevel_dictionary["Exception"] = exception_message
     fp = open(jsonfile_path , 'w')
-    fp.write(str(slevel_dictionary))
+    fp.write(json.dumps(slevel_dictionary , indent = 4))
     fp.close()
     print slevel_dictionary
 '''
