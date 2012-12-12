@@ -1,14 +1,15 @@
-#! /usr/bin/env python
-#coding=utf-8
+
+# -*- coding: utf-8 -*-
 '''/
 author :SongYang
 '''
 import json
 from  decode import STSdecode
 from config.STSDefinitions import DefinitionsToDictionary
-from config.settings import LEVELTYPE_LIST,RECORD_COUNTER
+from config.settings import LEVELTYPE_LIST, RECORD_COUNTER, EXCEPTION_MESSAGE, WARNING_MESSAGE 
 import datetime
-import re
+import re , sys
+encoding = sys.getfilesystemencoding()
 def stsdef_operation(s_defpath):
     '''/
      将STS定义文件进行字典索引
@@ -16,10 +17,11 @@ def stsdef_operation(s_defpath):
     def_dictionary = DefinitionsToDictionary(s_defpath)
     def_dictionary.levelclassify()    
 def samefile_into_list(input_filepath,s_list):
-    '''/
-    首先顺序找到同一份文件的文件名，放进列表进行处理
     '''
-    #针对一次性处理的文件进行字典索引，字典的键是每个文件名按照‘_’来分割的第一部分第二部分组成组成键
+    首先顺序找到同一份文件的文件名，放进列表进行处理
+    针对一次性处理的文件进行字典索引，字典的键是每个文件名按照‘_’来分割的第一部分第二部分组成组成键
+    '''
+    print "input_filepath:",input_filepath
     file_dictionary = {}
     for i in range(0 , len(s_list)):
         file_dictionary[s_list[i].split('_')[0]+s_list[i].split('_')[1]] = []
@@ -28,11 +30,11 @@ def samefile_into_list(input_filepath,s_list):
         file_dictionary[s_index].append(input_filepath+s_list[i])
     return file_dictionary
 
-def decoding_worker(filelist , result_path):
+def decoding_worker(filelist , result_path , guid):
     '''/
     解析进程，调用STSdecode类进行解析作业
     ''' 
-    decode = STSdecode(filelist , result_path)
+    decode = STSdecode(filelist , result_path , guid)
     decode.decoding()
     decode.objtype_into_samelevlist()
     decode.sameleveltableintoonetable()
@@ -58,7 +60,7 @@ def computetheday(s_date):
                        +datetime.timedelta(days = l_margin[s_w%7]))
         s_monday = s_monday[:4]+s_monday[5:7]+s_monday[8:]
         return  str(s_monday) 
-def json_packaging(filepath,jsonfile_path,exception_message):
+def json_packaging(filepath,jsonfile_path):
     '''/
     封装json串返回给前台，输入参数为需要一次性解析的文件路径
     '''
@@ -75,20 +77,10 @@ def json_packaging(filepath,jsonfile_path,exception_message):
         json_dictionary["Interval"] = str(3600*24*7)
         json_dictionary["SaveFileName"] = filepath
         json_dictionary["FileName"] = LEVELTYPE_LIST[i]
-        json_dictionary["RecordNums"] = RECORD_COUNTER[LEVELTYPE_LIST[i]]
+        json_dictionary["SuccessCount"] = RECORD_COUNTER[LEVELTYPE_LIST[i]]
         slevel_dictionary[LEVELTYPE_LIST[i]].append(json_dictionary)
-        slevel_dictionary["Exception"] = exception_message
+        slevel_dictionary["Exception"] = EXCEPTION_MESSAGE
+        slevel_dictionary["Warning"] = WARNING_MESSAGE
     fp = open(jsonfile_path , 'w')
     fp.write(json.dumps(slevel_dictionary , indent = 4))
     fp.close()
-    print slevel_dictionary
-'''
-stsdef_operation(DEF_PATH) 
-samefile_into_list(S_FILELIST)
-KEYLIST = FILE_DICTIONARY.keys()
-for key in range(0 , len(KEYLIST)):
-    #给函数传进去一个list，这个list是属于一个文件的 分割文件 名称列表
-    decoding_worker(FILE_DICTIONARY[KEYLIST[key]])
-    print "以"+str(FILE_DICTIONARY[KEYLIST[key]][0])+"开始的文件已经解析完毕，封装json串返回前台"
-    json_packaging(S_FILELIST[0])
-'''

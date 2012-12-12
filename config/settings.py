@@ -1,12 +1,23 @@
 #! /usr/bin/env python
-#coding=utf-8
+# -*- coding: utf-8 -*-
 '''/
 author :SongYang
 '''
 
-EXCEPTION_MESSAGE = ""
+EXCEPTION_MESSAGE = []
+WARNING_MESSAGE   = []
 LEVELTYPE_LIST = ["STSBSC" , "STSTRA" , "STSCELL" , "STSHOINT" , "STSHOEXT" , "STSMOTS" , "STSLAPD"]
 
+
+#记录definition表中counter的顺序，方便按照顺序写入文件 入数据库
+FILETABLE = {}
+FILETABLE["STSBSC"]   = []
+FILETABLE["STSTRA"]   = []
+FILETABLE["STSCELL"]  = []
+FILETABLE["STSHOINT"] = []
+FILETABLE["STSHOEXT"] = []
+FILETABLE["STSMOTS"]  = []
+FILETABLE["STSLAPD"]  = []
 #计数器，每张表成功插入多少条数据
 RECORD_COUNTER={}
 RECORD_COUNTER["STSBSC"]=0
